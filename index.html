@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Response Ranker — Side-by-Side Evaluation Tool for AI Trainers</title>
+<meta name="description" content="A free, offline, single-page tool for AI trainers to score two model responses on accuracy, completeness, clarity, and instruction following — then export a structured verdict.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div>
+      <h1>AI Response Ranker</h1>
+      <p class="tagline">Score two model responses side by side. Export a structured verdict.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" id="sampleBtn" class="btn btn-light">Load sample</button>
+      <button type="button" id="clearBtn" class="btn btn-ghost">Clear</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Prompt -->
+  <section class="card">
+    <label class="section-label" for="promptInput">Prompt given to the models</label>
+    <textarea id="promptInput" rows="3" placeholder="Paste the prompt both responses were answering…"></textarea>
+  </section>
+
+  <!-- Responses -->
+  <div class="responses">
+
+    <section class="card response-card" id="cardA">
+      <div class="response-head">
+        <h2>Response A</h2>
+        <span class="lead-pill" id="leadA" hidden>Leading</span>
+      </div>
+      <textarea id="respA" rows="8" placeholder="Paste response A…"></textarea>
+
+      <div class="sliders" data-side="a">
+        <div class="slider-row">
+          <label for="a-accuracy">Accuracy <span class="hint">Facts are correct, no hallucinations</span></label>
+          <input type="range" id="a-accuracy" min="1" max="5" step="1" value="3" data-side="a" data-criterion="accuracy">
+          <output id="a-accuracy-val">3</output>
+        </div>
+        <div class="slider-row">
+          <label for="a-completeness">Completeness <span class="hint">Covers everything the prompt asks</span></label>
+          <input type="range" id="a-completeness" min="1" max="5" step="1" value="3" data-side="a" data-criterion="completeness">
+          <output id="a-completeness-val">3</output>
+        </div>
+        <div class="slider-row">
+          <label for="a-clarity">Clarity <span class="hint">Easy to read, well structured</span></label>
+          <input type="range" id="a-clarity" min="1" max="5" step="1" value="3" data-side="a" data-criterion="clarity">
+          <output id="a-clarity-val">3</output>
+        </div>
+        <div class="slider-row">
+          <label for="a-instruction">Instruction following <span class="hint">Format, length, tone, constraints obeyed</span></label>
+          <input type="range" id="a-instruction" min="1" max="5" step="1" value="3" data-side="a" data-criterion="instruction">
+          <output id="a-instruction-val">3</output>
+        </div>
+      </div>
+
+      <div class="total-row">
+        <span class="total-label">Weighted total</span>
+        <span class="total-value" id="totalA">3.00 / 5</span>
+      </div>
+      <div class="bar"><div class="bar-fill fill-a" id="barA" style="width:60%"></div></div>
+    </section>
+
+    <section class="card response-card" id="cardB">
+      <div class="response-head">
+        <h2>Response B</h2>
+        <span class="lead-pill" id="leadB" hidden>Leading</span>
+      </div>
+      <textarea id="respB" rows="8" placeholder="Paste response B…"></textarea>
+
+      <div class="sliders" data-side="b">
+        <div class="slider-row">
+          <label for="b-accuracy">Accuracy <span class="hint">Facts are correct, no hallucinations</span></label>
+          <input type="range" id="b-accuracy" min="1" max="5" step="1" value="3" data-side="b" data-criterion="accuracy">
+          <output id="b-accuracy-val">3</output>
+        </div>
+        <div class="slider-row">
+          <label for="b-completeness">Completeness <span class="hint">Covers everything the prompt asks</span></label>
+          <input type="range" id="b-completeness" min="1" max="5" step="1" value="3" data-side="b" data-criterion="completeness">
+          <output id="b-completeness-val">3</output>
+        </div>
+        <div class="slider-row">
+          <label for="b-clarity">Clarity <span class="hint">Easy to read, well structured</span></label>
+          <input type="range" id="b-clarity" min="1" max="5" step="1" value="3" data-side="b" data-criterion="clarity">
+          <output id="b-clarity-val">3</output>
+        </div>
+        <div class="slider-row">
+          <label for="b-instruction">Instruction following <span class="hint">Format, length, tone, constraints obeyed</span></label>
+          <input type="range" id="b-instruction" min="1" max="5" step="1" value="3" data-side="b" data-criterion="instruction">
+          <output id="b-instruction-val">3</output>
+        </div>
+      </div>
+
+      <div class="total-row">
+        <span class="total-label">Weighted total</span>
+        <span class="total-value" id="totalB">3.00 / 5</span>
+      </div>
+      <div class="bar"><div class="bar-fill fill-b" id="barB" style="width:60%"></div></div>
+    </section>
+  </div>
+
+  <!-- Verdict -->
+  <section class="card">
+    <span class="section-label">Verdict</span>
+    <div class="winner-group" role="radiogroup" aria-label="Winner">
+      <label class="winner-option">
+        <input type="radio" name="winner" value="A"> Response A wins
+      </label>
+      <label class="winner-option">
+        <input type="radio" name="winner" value="Tie" checked> Tie
+      </label>
+      <label class="winner-option">
+        <input type="radio" name="winner" value="B"> Response B wins
+      </label>
+    </div>
+    <p class="winner-hint" id="winnerHint">The winner is pre-selected from the totals — you can always override it.</p>
+
+    <label class="section-label" for="rationaleInput">Rationale</label>
+    <textarea id="rationaleInput" rows="4" placeholder="Why does the winner win? Note factual errors, missed requirements, tone or format problems, and anything a reviewer should double-check…"></textarea>
+  </section>
+
+  <!-- Export -->
+  <section class="card export-card">
+    <span class="section-label">Export verdict</span>
+    <div class="export-actions">
+      <button type="button" id="copyMdBtn" class="btn btn-primary">Copy as Markdown</button>
+      <button type="button" id="dlMdBtn" class="btn btn-secondary">Download .md</button>
+      <button type="button" id="copyJsonBtn" class="btn btn-primary">Copy as JSON</button>
+      <button type="button" id="dlJsonBtn" class="btn btn-secondary">Download .json</button>
+    </div>
+    <p class="export-note">Exports include the prompt, both responses, every score, both totals, the winner, and your rationale — timestamped, ready to paste into a task report or annotation platform.</p>
+  </section>
+
+  <footer class="site-footer">
+    <p>AI Response Ranker runs entirely in your browser — no data ever leaves this page. Built for AI trainers, data annotators, and RLHF reviewers.</p>
+  </footer>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
